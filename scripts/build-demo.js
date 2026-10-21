@@ -18,7 +18,7 @@ ${read('styles.css')}
 ${app}
 <script>window.SPRITES=${JSON.stringify(sprites)};</script>
 <script>
-${read('kanto.js')}
+${fs.readFileSync(path.join(__dirname, '..', 'lib', 'kanto.js'), 'utf8')}
 </script>
 <script>
 ${read('app.js')}

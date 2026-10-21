@@ -632,7 +632,9 @@
       const reg = await api('/api/registry');
       state.caught = reg.caught; state.pending = reg.pending;
       if (!state.busy && battle.hidden) render(); else renderTop();
-    } catch {}
+    } catch (e) {
+      if (!refresh.warned) { refresh.warned = true; toast(e.message); }
+    }
   }
 
   /* ---------------- Events ---------------- */

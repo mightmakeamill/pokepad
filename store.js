@@ -97,4 +97,13 @@ function fileStore() {
   };
 }
 
-module.exports = REDIS_URL && REDIS_TOKEN ? redisStore() : fileStore();
+// Vercel's disk is read-only and memory resets per request, so without Redis
+// every call fails with a message saying how to fix it instead of crashing.
+function missingStore() {
+  const no = async () => {
+    throw new Error('Storage is not set up. In Vercel, connect Upstash Redis under Storage, then redeploy.');
+  };
+  return { kind: 'missing', caughtAll: no, addCaught: no, reserve: no, getReservation: no, release: no, pendingAll: no };
+}
+
+module.exports = REDIS_URL && REDIS_TOKEN ? redisStore() : process.env.VERCEL ? missingStore() : fileStore();

@@ -2,11 +2,10 @@
 // pump.fun create transactions through PumpPortal's local-transaction API.
 // The server never holds keys: the browser signs with the trainer's wallet
 // and a fresh mint keypair, then hands the signed tx back for relay.
-const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const { Connection, PublicKey, VersionedTransaction } = require('@solana/web3.js');
-const KANTO = require('./public/kanto.js');
+const KANTO = require('./lib/kanto.js');
 
 const PORT = +process.env.PORT || 3000;
 const RPC = process.env.SOLANA_RPC || 'https://api.mainnet-beta.solana.com';
@@ -38,6 +37,7 @@ const fail = (res, code, message) => res.status(code).json({ error: message });
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
+app.get('/kanto.js', (req, res) => res.type('js').sendFile(path.join(__dirname, 'lib/kanto.js')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/vendor', express.static(path.join(__dirname, 'public/vendor')));
 
@@ -50,7 +50,7 @@ app.get('/api/registry', async (req, res) => {
     const [caught, pending] = await Promise.all([store.caughtAll(), store.pendingAll()]);
     res.set('Cache-Control', 'no-store').json({ caught, pending });
   } catch (e) {
-    fail(res, 500, 'The registry is unreachable right now.');
+    fail(res, 503, e.message);
   }
 });
 
@@ -61,7 +61,10 @@ async function uploadMetadata(p) {
     if (!r.ok) throw new Error();
     image = await r.blob();
   } catch {
-    image = new Blob([fs.readFileSync(path.join(__dirname, 'public/sprites', `${p.id}.png`))], { type: 'image/png' });
+    // Official artwork missing: fall back to the small sprite.
+    const r = await fetch(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`);
+    if (!r.ok) throw new Error(`Could not fetch artwork for ${p.name}.`);
+    image = await r.blob();
   }
   const form = new FormData();
   form.append('file', image, `${p.id}.png`);
@@ -92,8 +95,12 @@ app.post('/api/catch/prepare', async (req, res) => {
   if (!isKey(trainer) || !isKey(mint)) return fail(res, 400, 'Trainer and mint must be Solana addresses.');
   if (!b) return fail(res, 400, 'Choose a Poké Ball from the Bag.');
 
-  const caught = await store.caughtAll().catch(() => null);
-  if (!caught) return fail(res, 503, 'The registry is unreachable right now. Try again shortly.');
+  let caught;
+  try {
+    caught = await store.caughtAll();
+  } catch (e) {
+    return fail(res, 503, e.message);
+  }
   const locked = KANTO.lockReason(id, caught);
   if (locked) return fail(res, 409, locked);
   if (b.oncePerTrainer && Object.values(caught).some((c) => c.trainer === trainer && c.ball === b.key))
