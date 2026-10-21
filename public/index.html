@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PokéPad Kanto Launchpad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--APP-->
+<main class="dex" id="dex" aria-label="PokéPad Pokédex">
+  <header class="dex-top">
+    <div class="lens" aria-hidden="true"><span></span></div>
+    <div class="leds" aria-hidden="true"><i class="led r"></i><i class="led y"></i><i class="led g"></i></div>
+    <div class="brand">
+      <h1>POKéPAD</h1>
+      <p>Kanto launchpad on pump.fun · 151 Pokémon · one mint each</p>
+    </div>
+    <div class="top-right">
+      <div class="counter" aria-live="polite">
+        <span class="counter-label">ON-CHAIN</span>
+        <span class="counter-num"><b id="caughtNum">0</b>/151</span>
+        <div class="progress" id="progress" aria-hidden="true"></div>
+      </div>
+      <div class="wallet-row">
+        <span class="mode-chip" id="modeChip">DEMO</span>
+        <button class="key key-wallet" id="walletBtn" type="button">Connect wallet</button>
+        <button class="key key-mute" id="muteBtn" type="button" aria-pressed="false" title="Sound">♪</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="halves">
+    <section class="half left" aria-label="Selected Pokémon">
+      <div class="bezel">
+        <div class="bezel-dots" aria-hidden="true"><i></i><i></i></div>
+        <div class="screen viewer" id="viewer"></div>
+        <div class="bezel-foot" aria-hidden="true"><i class="led r small"></i><span class="grill"></span></div>
+      </div>
+      <div class="controls">
+        <button class="round-btn" id="grassBtn" type="button" title="Walk in the tall grass: jump to a random wild Pokémon">GRASS</button>
+        <div class="pills" aria-hidden="true"><i class="pill red"></i><i class="pill blue"></i></div>
+        <div class="dpad" role="group" aria-label="Move through the Pokédex">
+          <button type="button" class="d up" data-d="-10" aria-label="Up ten">▲</button>
+          <button type="button" class="d left" data-d="-1" aria-label="Previous">◀</button>
+          <span class="d mid" aria-hidden="true"></span>
+          <button type="button" class="d right" data-d="1" aria-label="Next">▶</button>
+          <button type="button" class="d down" data-d="10" aria-label="Down ten">▼</button>
+        </div>
+        <button class="ab-btn" id="aBtn" type="button" title="Throw a Poké Ball at the selected Pokémon">A</button>
+      </div>
+    </section>
+
+    <div class="hinge" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <section class="half right" aria-label="Pokédex menu">
+      <nav class="keys" id="tabs" aria-label="Menu">
+        <button class="key" type="button" data-tab="dex">POKéDEX</button>
+        <button class="key" type="button" data-tab="bag">BAG</button>
+        <button class="key" type="button" data-tab="pc">BILL'S PC</button>
+        <button class="key" type="button" data-tab="trainer">TRAINER</button>
+        <button class="key" type="button" data-tab="fame">HALL OF FAME</button>
+        <button class="key" type="button" data-tab="map">TOWN MAP</button>
+      </nav>
+      <div class="screen panel" id="panel"></div>
+    </section>
+  </div>
+</main>
+
+<div class="battle" id="battle" hidden role="dialog" aria-modal="true" aria-labelledby="battleText">
+  <div class="arena">
+    <div class="foe-box">
+      <div class="foe-name" id="foeName"></div>
+      <div class="foe-sub" id="foeSub"></div>
+      <div class="hp"><span>HP</span><i><b id="foeHp"></b></i></div>
+    </div>
+    <div class="foe-spot">
+      <div class="ground" aria-hidden="true"></div>
+      <img class="foe" id="foeImg" alt="">
+      <div class="ball-fly" id="ballFly" aria-hidden="true"></div>
+      <div class="sparkles" id="sparkles" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+    <div class="me-spot" aria-hidden="true">
+      <div class="ground"></div>
+      <div class="trainer-back"></div>
+    </div>
+    <div class="me-box">
+      <div class="foe-name" id="meName">TRAINER</div>
+      <div class="foe-sub" id="meSub"></div>
+    </div>
+  </div>
+  <div class="textbox">
+    <p id="battleText" aria-live="polite"></p>
+    <div class="menu" id="battleMenu"></div>
+  </div>
+</div>
+
+<div class="oak" id="oak" hidden role="dialog" aria-modal="true" aria-labelledby="oakText">
+  <div class="oak-card">
+    <div class="oak-portrait" aria-hidden="true"><span>PROF.<br>OAK</span></div>
+    <div class="textbox">
+      <p id="oakText"></p>
+      <div class="menu" id="oakMenu"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<!--/APP-->
+<script src="kanto.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "pokepad",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kanto Pok\u00e9dex launchpad on Solana, deploying through pump.fun",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "build:demo": "node scripts/build-demo.js",
+    "postinstall": "node -e \"require('fs').mkdirSync('public/vendor',{recursive:true});require('fs').copyFileSync(require.resolve('@solana/web3.js/lib/index.iife.min.js'),'public/vendor/index.iife.min.js')\""
+  },
+  "engines": {
+    "node": ">=22.9"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.99.0",
+    "@upstash/redis": "^1.39.0",
+    "express": "^4.22.3"
+  }
+}
