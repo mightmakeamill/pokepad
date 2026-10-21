@@ -4,7 +4,7 @@ Themed pump.fun launchpad (Gen 1 Pokémon) on Vercel. It is also the reference e
 
 When the user says **"BUILD A PAD"**, use the `build-a-pad` skill in `.claude/skills/build-a-pad/SKILL.md`:
 ask for the pad details (nothing else), then build from the user's brief, reusing this repo's
-engine and swapping only the theme.
+launch engine unchanged and designing a brand-new UI (never PokéPad's layout reskinned).
 
 Hard rules learned here:
 - Never `require('@solana/web3.js')` on the server (ERR_REQUIRE_ESM on Vercel). Use `lib/solana.js`.
