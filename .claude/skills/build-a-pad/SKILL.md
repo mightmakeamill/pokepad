@@ -1,13 +1,18 @@
 ---
 name: build-a-pad
-description: Build a new themed pump.fun launchpad by reskinning the PokéPad engine onto a new narrative. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven engine and swaps only the theme.
+description: Build a new themed pump.fun launchpad on the PokéPad launch engine with a brand-new UI. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven launch engine unchanged and designs a new layout, never PokéPad's reskinned.
 ---
 
 # BUILD A PAD
 
-PokéPad (this repo) is the reference implementation. Every new pad reuses its **engine**
-unchanged and replaces only its **theme**. Never rebuild the engine from scratch: each piece
+PokéPad (this repo) is the reference implementation. Every new pad reuses its **launch engine**
+unchanged and gets a **brand-new UI**. Never rebuild the engine from scratch: each piece
 below exists because the simpler version broke on Vercel, pump.fun or Phantom.
+
+**The UI is never PokéPad's layout with new colors.** PokéPad's two-halves handheld (viewer +
+d-pad on the left, tab keys + LCD panel on the right, a modal battle box) belongs to PokéPad
+only. Each pad gets its own page structure, navigation, launch moment and screens, designed
+from its world. Only the launch tech stays the same.
 
 ## Step 1: Ask for the pad details, nothing else
 
@@ -23,7 +28,7 @@ The user then describes it freely, like the original PokéPad brief:
 
 From that brief, decide everything yourself and don't ask follow-ups: the name, the fixed numbered
 set of tokens, tickers, the main object the UI is shaped like, the launch action, dev-buy tiers,
-unlock rules from the theme's lore, achievements, extra screens, design and art. Use the theme's real
+unlock rules from the theme's lore, achievements, extra screens, the page layout, design and art. Use the theme's real
 items and lore the way PokéPad used the Pokédex, Poké Balls, gym badges, Bill's PC and the Town Map.
 If the brief already includes details, use them.
 
@@ -54,16 +59,18 @@ Clone `mightmakeamill/pokepad` into a new folder for the new repo, then keep the
 | `scripts/prepare-public.js`, `scripts/build-demo.js` | Copy shared rules + web3 into `public/`; build the single-file demo. |
 | `package.json` | `engines.node: 24.x`, build + postinstall run prepare-public. |
 
-## Step 3: Replace the theme
+## Step 3: Design a new UI on top of the engine
 
 | PokéPad file | Becomes |
 |---|---|
 | `lib/kanto.js` | `lib/<world>.js`: the numbered set (`id, name, ...`), `ticker()`, `BALLS` (dev-buy tiers), `SPECIAL` locks, `lockReason()`, achievements. Keep the same exported function names so `lib/app.js` works untouched. |
-| `public/index.html` + `styles.css` | A new hero object. Don't reuse the red Pokédex: pick the world's own device (grimoire, arcade cabinet, trading binder...). Load the artifact-design skill first. |
-| `public/app.js` render functions | Rename screens to the world's vocabulary; keep the catch/confirm/demo plumbing. |
+| `public/index.html` + `styles.css` | Written from scratch. New layout and information architecture, not the two-halves device: e.g. a full-width scene with the launch playing inline, the set grouped the way the world groups it (streets, houses, teams, decks), a different navigation object (remote, map, binder tabs). Load the artifact-design skill first. |
+| `public/app.js` | Write new render, navigation and launch-animation code for that layout. Copy only the plumbing verbatim: `connect`, `loadWeb3`, `api`, `catchLive`, `catchDemo`, `refresh`, the demo seed and the `boot` live/demo split. |
 | Copy | Intro character, battle/encounter text, success and failure lines. |
 | `ARTWORK()` in `lib/app.js` + `public/sprites/` | The new art source. Download images into `public/sprites/` so the page doesn't hotlink. |
 | Metadata `describe()` | New description template. |
+
+Before shipping, compare a screenshot with PokéPad's. If the two pages share their layout, redo the UI.
 
 ## Step 4: Verify, ship, hand off
 
