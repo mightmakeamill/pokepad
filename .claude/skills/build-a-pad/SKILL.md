@@ -1,6 +1,6 @@
 ---
 name: build-a-pad
-description: Build a new themed pump.fun launchpad by reskinning the PokéPad engine onto a new narrative. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven engine and swaps only the theme.
+description: Build a new themed pump.fun launchpad on the PokéPad launch engine with a brand-new UI. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven launch engine unchanged and designs a new layout, never PokéPad's reskinned.
 ---
 
 # BUILD A PAD
@@ -28,7 +28,7 @@ The user then describes it freely, like the original PokéPad brief:
 
 From that brief, decide everything yourself and don't ask follow-ups: the name, the fixed numbered
 set of tokens, tickers, the main object the UI is shaped like, the launch action, dev-buy tiers,
-unlock rules from the theme's lore, achievements, extra screens, design and art. Use the theme's real
+unlock rules from the theme's lore, achievements, extra screens, the page layout, design and art. Use the theme's real
 items and lore the way PokéPad used the Pokédex, Poké Balls, gym badges, Bill's PC and the Town Map.
 If the brief already includes details, use them.
 
