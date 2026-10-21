@@ -682,10 +682,13 @@
 
   /* ---------------- Boot ---------------- */
   async function boot() {
-    if (!window.SPRITES) try {
-      const cfg = await api('/api/config');
-      if (cfg.mode === 'live') state.mode = 'live';
-    } catch {}
+    // Only the single-file build (sprites inlined) runs the demo. A hosted site
+    // stays live even if the API is down, so nobody "catches" a fake token.
+    let apiDown = null;
+    if (!window.SPRITES) {
+      state.mode = 'live';
+      try { await api('/api/config'); } catch (e) { apiDown = e; }
+    }
     if (state.mode === 'live') {
       await refresh();
       setInterval(refresh, 12000);
@@ -695,6 +698,7 @@
     const h = parseInt(location.hash.slice(1), 10);
     if (h >= 1 && h <= 151) state.sel = h;
     render();
+    if (apiDown) toast(`Can't reach the PokéPad server, so catching is off. Reload in a minute.`);
     if (!store.get('metOak', false)) oakIntro();
   }
   boot();
