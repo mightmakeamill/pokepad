@@ -1235,16 +1235,32 @@ img.px, .px img { image-rendering: pixelated; }
   async function catchLive(id, ball, step) {
     const w3 = await loadWeb3();
     const mint = w3.Keypair.generate();
-    step('Writing the Pokédex entry to IPFS…');
+    step('Writing the Pokédex entry…');
     const prep = await api('/api/catch/prepare', { dex: id, trainer: state.wallet, mint: mint.publicKey.toBase58(), ball });
     step('Approve the throw in your wallet…');
     const tx = w3.VersionedTransaction.deserialize(b64ToBytes(prep.tx));
-    let signed;
-    try { signed = await state.provider.signTransaction(tx); }
-    catch (e) { api('/api/catch/cancel', { dex: id, trainer: state.wallet }).catch(() => {}); throw new Error('You put the ball away. The wallet request was declined.'); }
-    signed.sign([mint]);
-    step('The ball is wobbling… waiting for Solana to confirm.');
-    const res = await api('/api/catch/submit', { dex: id, tx: bytesToB64(signed.serialize()) });
+    // 4001 = the trainer rejected it in the wallet; anything else is a send failure.
+    const declined = (e) => {
+      api('/api/catch/cancel', { dex: id, trainer: state.wallet }).catch(() => {});
+      return e?.code === 4001 || /reject|cancel|denied/i.test(e?.message || '')
+        ? new Error('You put the ball away. The wallet request was declined.')
+        : new Error(`Your wallet could not send the launch: ${e?.message || 'unknown error'}`);
+    };
+    let res;
+    if (state.provider.signAndSendTransaction) {
+      // Preferred by Phantom: the mint co-signs first, the wallet signs and sends.
+      tx.sign([mint]);
+      let sent;
+      try { sent = await state.provider.signAndSendTransaction(tx); } catch (e) { throw declined(e); }
+      step('The ball is wobbling… waiting for Solana to confirm.');
+      res = await api('/api/catch/confirm', { dex: id, signature: sent.signature || sent });
+    } else {
+      let signed;
+      try { signed = await state.provider.signTransaction(tx); } catch (e) { throw declined(e); }
+      signed.sign([mint]);
+      step('The ball is wobbling… waiting for Solana to confirm.');
+      res = await api('/api/catch/submit', { dex: id, tx: bytesToB64(signed.serialize()) });
+    }
     return { mint: res.mint, signature: res.signature };
   }
 
