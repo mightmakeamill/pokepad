@@ -1,6 +1,6 @@
 ---
 name: build-a-pad
-description: Build a new themed pump.fun launchpad by reskinning the PokéPad engine onto a new narrative. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Starts with the checklist, then reuses the proven engine and swaps only the theme.
+description: Build a new themed pump.fun launchpad by reskinning the PokéPad engine onto a new narrative. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven engine and swaps only the theme.
 ---
 
 # BUILD A PAD
@@ -9,49 +9,32 @@ PokéPad (this repo) is the reference implementation. Every new pad reuses its *
 unchanged and replaces only its **theme**. Never rebuild the engine from scratch: each piece
 below exists because the simpler version broke on Vercel, pump.fun or Phantom.
 
-## Step 1: Send the intake form first
+## Step 1: Ask for the pad details, nothing else
 
-When the user says "BUILD A PAD", reply with this form before writing any code: it is what you
-need to know to build the pad. The user fills it in. If they leave something blank, use the
-default shown and say which defaults you used. Only items marked * must be answered.
+When the user says "build a pad" (any casing) with no details, reply with one short line asking
+for the pad details, e.g. "What's the pad? Give me the theme and what users will launch." No form,
+no checklist, no questions about infra.
 
-```
-BUILD A PAD: fill in what you can, blanks get the default
+The user then describes it freely, like the original PokéPad brief:
 
-THE PROJECT
-1.* Pad name:                     (e.g. PokéPad)
-2.* Theme / narrative:            (e.g. Gen 1 Pokémon)
-3.* What gets launched:           the full list of tokens, or where it comes from
-                                  (e.g. "all 151 Gen 1 Pokémon"). Must be a fixed, numbered set.
-4.  One-line pitch:               shown on the site and in every token description
-5.  Ticker style:                 default: the item's name in caps, max 10 letters ($PIKACHU)
+> Build a launchpad in the theme of pokemon, the goal is for the users to deploy all the first
+> generation pokemon, use your skill designs to do something unique, use pokemons real items like
+> the pokedex, be creative.
 
-THE GAME
-6.  Main object the site looks like:  default: I pick one from the theme (Pokédex, grimoire, arcade cabinet...)
-7.  Launch action:                 default: I pick one (throw a ball, cast a spell, pull a card...)
-8.  Dev-buy tiers + names:         default: 4 tiers at 0.1 / 0.5 / 1.5 / 5 SOL, top tier once per wallet
-9.  Unlock rules:                  default: I write rules from the theme's lore (evolutions, rare ones unlock later, the last one at 100%)
-10. Badges / achievements:         default: 8, earned by launching enough of one category
-11. Extra screens:                 default: collection box, leaderboard, map/progress, intro character
+From that brief, decide everything yourself and don't ask follow-ups: the name, the fixed numbered
+set of tokens, tickers, the main object the UI is shaped like, the launch action, dev-buy tiers,
+unlock rules from the theme's lore, achievements, extra screens, design and art. Use the theme's real
+items and lore the way PokéPad used the Pokédex, Poké Balls, gym badges, Bill's PC and the Town Map.
+If the brief already includes details, use them.
 
-THE LOOK
-12. Colors / vibe:                 default: I design it from the theme
-13. Art source:                    link to images, or "find them". Note any IP/trademark risk.
+The one thing you need from the user is where to push: once the build works, ask for an empty private
+GitHub repo (added to the Claude GitHub App) to push to.
 
-THE LINKS
-14. X (Twitter) link:              optional, added to every token
-15. Telegram link:                 optional, added to every token
-16. Domain (if you have one):      default: none yet (Phantom flags *.vercel.app; get one before going public)
-
-SETUP
-17.* New GitHub repo name:          create it empty + private and add it to the Claude GitHub App
-```
-
-After the build, give the user their own setup steps (Claude can't log in to these):
-Vercel import, Upstash Redis (Free, US East, no read regions), the `SOLANA_RPC` Helius key,
-`SITE_URL` and the custom domain, an email to review@phantom.com, and the launch checks
-(`/api/registry` returns `{"caught":{},"pending":{}}`, a test launch with the smallest tier,
-LIVE mode on the hosted site).
+After pushing, give the user their own setup steps (Claude can't log in to these): Vercel import,
+Upstash Redis (Free, US East, no read regions), the `SOLANA_RPC` Helius key, `SITE_URL` and a custom
+domain (Phantom flags *.vercel.app), an email to review@phantom.com, and the launch checks
+(`/api/registry` returns `{"caught":{},"pending":{}}`, a test launch with the smallest tier, LIVE
+mode on the hosted site).
 
 ## Step 2: Copy the engine verbatim
 
