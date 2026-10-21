@@ -9,35 +9,49 @@ PokéPad (this repo) is the reference implementation. Every new pad reuses its *
 unchanged and replaces only its **theme**. Never rebuild the engine from scratch: each piece
 below exists because the simpler version broke on Vercel, pump.fun or Phantom.
 
-## Step 1: Reply with the checklist first
+## Step 1: Send the intake form first
 
-When the user says "BUILD A PAD", reply with this checklist before writing any code. Fill in
-what they already told you and ask only for the missing **required** items in one message.
+When the user says "BUILD A PAD", reply with this form before writing any code: it is what you
+need to know to build the pad. The user fills it in. If they leave something blank, use the
+default shown and say which defaults you used. Only items marked * must be answered.
 
 ```
-PAD CHECKLIST
-Narrative
-[ ] Theme / world (required)          e.g. "Gen 1 Pokémon"
-[ ] The set to launch (required)      e.g. 151 Pokémon; needs a finite, numbered list
-[ ] Pad name + ticker style           e.g. PokéPad, $PIKACHU
-[ ] Hero item (the "Pokédex")         the device/object the whole UI is shaped like
-[ ] Item mapped to the dev buy        Poké Ball tiers -> 0.1 / 0.5 / 1.5 / 5 SOL
-[ ] Unlock rules                      evolutions, story locks, last-one-standing (Mew)
-[ ] Achievements                      gym badges by type
-[ ] Extra screens                     PC box, Hall of Fame, Town Map, intro character
-[ ] Artwork source + IP risk          where images come from; trademark exposure
-Infra (the user does these, Claude can't)
-[ ] New empty PRIVATE GitHub repo     tell Claude the name; it must be added to the Claude GitHub App
-[ ] Vercel project imported from it   framework "Other"; vercel.json handles the rest
-[ ] Upstash Redis connected           Storage -> Upstash -> Free -> primary US East, no read regions
-[ ] SOLANA_RPC env var                Helius URL (free plan is fine for under ~10 launches)
-[ ] Custom domain + SITE_URL          *.vercel.app gets flagged by Phantom
-[ ] Email review@phantom.com          after the domain is live
-Launch checks
-[ ] /api/registry returns {"caught":{},"pending":{}}
-[ ] Test launch with the smallest buy; token shows on pump.fun
-[ ] Hosted site shows LIVE mode, never demo
+BUILD A PAD: fill in what you can, blanks get the default
+
+THE PROJECT
+1.* Pad name:                     (e.g. PokéPad)
+2.* Theme / narrative:            (e.g. Gen 1 Pokémon)
+3.* What gets launched:           the full list of tokens, or where it comes from
+                                  (e.g. "all 151 Gen 1 Pokémon"). Must be a fixed, numbered set.
+4.  One-line pitch:               shown on the site and in every token description
+5.  Ticker style:                 default: the item's name in caps, max 10 letters ($PIKACHU)
+
+THE GAME
+6.  Main object the site looks like:  default: I pick one from the theme (Pokédex, grimoire, arcade cabinet...)
+7.  Launch action:                 default: I pick one (throw a ball, cast a spell, pull a card...)
+8.  Dev-buy tiers + names:         default: 4 tiers at 0.1 / 0.5 / 1.5 / 5 SOL, top tier once per wallet
+9.  Unlock rules:                  default: I write rules from the theme's lore (evolutions, rare ones unlock later, the last one at 100%)
+10. Badges / achievements:         default: 8, earned by launching enough of one category
+11. Extra screens:                 default: collection box, leaderboard, map/progress, intro character
+
+THE LOOK
+12. Colors / vibe:                 default: I design it from the theme
+13. Art source:                    link to images, or "find them". Note any IP/trademark risk.
+
+THE LINKS
+14. X (Twitter) link:              optional, added to every token
+15. Telegram link:                 optional, added to every token
+16. Domain (if you have one):      default: none yet (Phantom flags *.vercel.app; get one before going public)
+
+SETUP
+17.* New GitHub repo name:          create it empty + private and add it to the Claude GitHub App
 ```
+
+After the build, give the user their own setup steps (Claude can't log in to these):
+Vercel import, Upstash Redis (Free, US East, no read regions), the `SOLANA_RPC` Helius key,
+`SITE_URL` and the custom domain, an email to review@phantom.com, and the launch checks
+(`/api/registry` returns `{"caught":{},"pending":{}}`, a test launch with the smallest tier,
+LIVE mode on the hosted site).
 
 ## Step 2: Copy the engine verbatim
 
