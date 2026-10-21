@@ -7,10 +7,11 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
     "build:demo": "node scripts/build-demo.js",
-    "postinstall": "node -e \"require('fs').mkdirSync('public/vendor',{recursive:true});require('fs').copyFileSync(require.resolve('@solana/web3.js/lib/index.iife.min.js'),'public/vendor/index.iife.min.js')\""
+    "build": "node scripts/prepare-public.js",
+    "postinstall": "node scripts/prepare-public.js"
   },
   "engines": {
-    "node": ">=22.9"
+    "node": "22.x"
   },
   "dependencies": {
     "@solana/web3.js": "^1.99.0",
