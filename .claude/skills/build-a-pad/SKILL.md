@@ -72,6 +72,20 @@ Clone `mightmakeamill/pokepad` into a new folder for the new repo, then keep the
 
 Before shipping, compare a screenshot with PokéPad's. If the two pages share their layout, redo the UI.
 
+### Front-end patterns worth reaching for
+
+Ideas, not a layout to copy. Pick the ones that fit the world and write them fresh each time.
+
+| Pattern | How |
+|---|---|
+| Seeded canvas hero | A plain 2D `<canvas>` with a slow field of shapes from the theme. Seed the RNG (e.g. Park–Miller `seed = seed * 16807 % 2147483647`) so every visit draws the same scene; keep shapes out of the band where the headline and CTA sit; scale by `min(2, devicePixelRatio)`, refit with a `ResizeObserver`, pause off-screen with an `IntersectionObserver`, and draw a still frame under `prefers-reduced-motion`. |
+| Live prices in the browser | Fetch `https://api.dexscreener.com/tokens/v1/solana/<mint,mint,...>` from the page (no server route, no key). Show price + 24h change on cards; format `$1,234` above 1000, two decimals above 1, `toPrecision(4)` below. Leave the field blank on failure instead of showing `$0`. |
+| Contract-address pill | One constant for the pad's own token CA (empty = no pill). Mono font, middle-truncate on phones, click copies to the clipboard and flips the pill to the accent color for ~1.5s. Same pattern for the X link: one constant, empty = hidden. |
+| Two-role type | A sans for words, a mono for every number, ticker, address and label. Self-host the `.woff2` files and `preload` them. |
+| Spec ticker | The pad's real numbers (tiers, fees, set size, unlock rules) as short "value / label" cells, looped in a marquee strip. Duplicate the row once for a seamless loop and stop it under reduced motion. |
+| Tight palette | One background, one ink, one accent, one soft tint of the accent, one line color, all as `:root` tokens. |
+| Polite scroll behavior | Anything that scrolls itself into view (accordions, step lists) does so only right after a click or key press, never during the user's own scrolling. |
+
 ## Step 4: Verify, ship, hand off
 
 1. Run it locally: `npm start`, then load the page and `/api/config`, `/api/registry` and `/api/meta/1`.
