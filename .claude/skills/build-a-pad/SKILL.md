@@ -1,6 +1,6 @@
 ---
 name: build-a-pad
-description: Build a new themed pump.fun launchpad on the PokéPad launch engine with a brand-new UI. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Asks for the pad details, then reuses the proven launch engine unchanged and designs a new layout, never PokéPad's reskinned.
+description: Build a new themed pump.fun launchpad on the PokéPad launch engine with a brand-new UI. Use when the user says "BUILD A PAD" (any casing), asks for a new launchpad, or wants to reskin PokéPad. Also covers leverage / perps trading pads (paper vs real on-chain, never fake deposits). Asks for the pad details, then reuses the proven launch engine unchanged and designs a new layout, never PokéPad's reskinned.
 ---
 
 # BUILD A PAD
@@ -93,6 +93,33 @@ Ideas, not a layout to copy. Pick the ones that fit the world and write them fre
 3. Build `pokepad.html`-style single-file demo and publish it as an Artifact so the user can see it.
 4. Commit and push to the user's new repo.
 5. Give the user the infra checklist items they still own, with exact Vercel clicks.
+
+## Leverage / perps pads
+
+The launch engine above launches tokens; it does not trade them. A pad that offers longs, shorts or
+leverage is a different product, and the first decision is which kind it is. Ask the user only this.
+
+**Lesson from a live perps site (2026-10):** it showed a full 25x trading desk and a "vault" you
+"deposit" SOL into, but every deposit, withdrawal, order and close was Phantom `signMessage` on plain
+text. No SOL moved and nothing touched the chain. Positions, PnL and liquidations were rows in the
+site's own database, priced from DexScreener in the browser. The only real money path was buying the
+site's pump.fun token. Users read it as real leverage trading. Never build that.
+
+Pick one and label it everywhere (page, buttons, Phantom message text, FAQ):
+
+| Kind | What it is | Rules |
+|---|---|---|
+| **Paper trading** | Simulated positions with play balance | Say "paper" / "simulated" on the desk, the balance and every signed message. Never use the words deposit, withdraw, vault yield or payout for play money. Never sell the pad's token as earning from it. Wallet connect is optional (identity only, via `signMessage`). |
+| **Real on-chain perps** | Collateral held by an on-chain program | Integrate an established audited perps protocol's SDK (Drift, Jupiter Perps, etc.) through `signAndSendTransaction`. Never write a custom vault or margin program, never custody user SOL in a server wallet, never settle PnL on our server. Prices from an oracle, not DexScreener. Tell the user about legal/licensing exposure for derivatives in their jurisdiction. |
+
+Reusable from that site's design either way: browser-side market lists (DexScreener for
+trending/new/majors, GeckoTerminal OHLCV for candles by pool address), paste-a-CA to add a market,
+a liquidation-price readout on the ticket (`entry * (1 ∓ 1/leverage ± maintenance)`), and showing the
+exact text Phantom will sign before the user clicks.
+
+When reviewing someone else's perps site for the user: read its page JS for `signMessage` vs
+`signAndSendTransaction`/`SystemProgram.transfer`, and for where positions live (`/api/...` = their
+server). Tell the user plainly whether money actually moves, and to reject any unexpected transaction.
 
 ## Honest limits to tell the user every time
 
